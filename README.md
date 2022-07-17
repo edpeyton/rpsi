@@ -65,7 +65,7 @@ In those instances, the expression above simplifies. See (Yurdakul,
 ### Links
 
 Yurdakul, Bilal (2018). [Statistical Properties of Population Stability
-Index.](https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations).
+Index.](https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations)
 
 ------------------------------------------------------------------------
 
