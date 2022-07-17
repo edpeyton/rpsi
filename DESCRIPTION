@@ -1,0 +1,14 @@
+Package: rpsi
+Type: Package
+Title: Inference using the population stability index
+Version: 1.0.0
+Authors@R: c(person(given = "Ed", family = "Peyton", email = "edppeyton@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1427-0306")))
+Maintainer: Ed Peyton <edppeyton@gmail.com>
+Description: Calculation of the population stability index (commonly used in
+  credit risk) and the evaluation of meaningful thresholds for inferring stability.
+License: MIT + file LICENSE
+BugReports: https://github.com/edpeyton/rpsi/issues
+Encoding: UTF-8
+RoxygenNote: 7.1.1
+Imports:
+  utils
