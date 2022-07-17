@@ -40,7 +40,7 @@ provide better meaning than those currently perpetuated in the industry.
 ## Moving away from arbitrary thresholds
 
 Better critical values have already been derived (Yurdakul, 2018). The
-PSI was shown to have an approximate *χ*<sup>2</sup> distribution. That
+PSI was shown to have an approximate $\chi^{2}$ distribution. That
 is
 
 ``` math
