@@ -24,13 +24,18 @@ Unfortunately, there is a tendency is the field for the importance of
 the PSI to be misstated. Practitioners of the PSI (particularly model
 validators) often define arbitrary thresholds for the PSI, which when
 crossed, they interpret as meaningful indicators of some underlying
-change in behaviour. These arbitrary thresholds are typically values of
-5%, 10%, etc. and are often mapped to outputs of *Very stable*,
-*Stable*, …, *Very unstable*. These values are common in the credit risk
-literature but are without justification.
+change in behaviour.
+
+> These arbitrary thresholds are typically values of 5%, 10%, etc. and
+> are often mapped to outputs of *Very stable*, *Stable*, …, *Very
+> unstable*.
+
+These prescribed values are common in the credit risk literature but are
+without justification.
 
 In this package we try to address this blind application of the PSI in
-industry by applying the statistical properties (Yurdakul, 2018).
+industry by applying the statistical properties (Yurdakul, 2018) that
+provide better meaning than those currently perpetuated in the industry.
 
 ## Moving away from arbitrary thresholds
 
@@ -42,16 +47,18 @@ is
 \text{PSI}\sim\chi^{2}_{\alpha,B-1}\cdot(1/M+1/N)
 ```
 
-where *B* is the number of discrete values defining the distributions of
+where ``` math B``` is the number of discrete values defining the distributions of
 interest and (*M*, *N*) are the number of observations in each sample of
 interest.
 
 Therefore, it is simple to obtain critical thresholds for a PSI for a
 chosen confidence level *α*. In the case above, both distributions are
 treated as random. However, there are contexts where the base
-distribution if considered to be a population and not a random sample.
+distribution is considered to be a population and not a random sample.
 In those instances, the expression above simplifies. See (Yurdakul,
 2018) for details.
+
+## S3 methods for `rpsi` objects
 
 ------------------------------------------------------------------------
 
