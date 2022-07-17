@@ -47,12 +47,12 @@ is
 \text{PSI}\sim\chi^{2}_{\alpha,B-1}\cdot(1/M+1/N)
 ```
 
-where ``` math B``` is the number of discrete values defining the distributions of
-interest and (*M*, *N*) are the number of observations in each sample of
+where $B$ is the number of discrete values defining the distributions of
+interest and $(M,N)$ are the number of observations in each sample of
 interest.
 
 Therefore, it is simple to obtain critical thresholds for a PSI for a
-chosen confidence level *α*. In the case above, both distributions are
+chosen confidence level $\alpha$. In the case above, both distributions are
 treated as random. However, there are contexts where the base
 distribution is considered to be a population and not a random sample.
 In those instances, the expression above simplifies. See (Yurdakul,
