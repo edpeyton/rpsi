@@ -26,7 +26,7 @@ validators) often define arbitrary thresholds for the PSI, which when
 crossed, they interpret as meaningful indicators of some underlying
 change in behaviour.
 
-> These arbitrary thresholds are typically values of 5%, 10%, etc. and
+> These arbitrary thresholds are typically values of 0.02, 0.05, 0.1, etc. and
 > are often mapped to outputs of *Very stable*, *Stable*, …, *Very
 > unstable*.
 
@@ -64,8 +64,8 @@ In those instances, the expression above simplifies. See (Yurdakul,
 
 ### Links
 
-Yurdakul, Bilal (2018). Statistical Properties of Population Stability
-Index.
+Yurdakul, Bilal (2018). [Statistical Properties of Population Stability
+Index.](https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations).
 
 ------------------------------------------------------------------------
 
