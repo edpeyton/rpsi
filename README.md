@@ -30,8 +30,7 @@ change in behaviour. These arbitrary thresholds are typically values of
 literature but are without justification.
 
 In this package we try to address this blind application of the PSI in
-industry by applying the statistical properties discussed in
-<a href="#links">\[1\]</a>
+industry by applying the statistical properties (Yurdakul, 2018).
 
 ## Moving away from arbitrary thresholds
 
@@ -43,7 +42,12 @@ is
 \text{PSI}\sim\chi^{2}_{\alpha,B-1}\cdot(1/M+1/N)
 ```
 
-## Contributors
+### Links
+
+Yurdakul, Bilal (2018). Statistical Properties of Population Stability
+Index.
+
+### Contributors
 
 [Ed Peyton](https://github.com/edpeyton)
 
