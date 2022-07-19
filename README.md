@@ -3,12 +3,12 @@
 
 # rpsi
 
-[![](https://cranlogs.r-pkg.org/badges/pkgdepR)](https://cran.r-project.org/package=pkgdepR)
-[![](http://cranlogs.r-pkg.org/badges/grand-total/pkgdepR)](https://cran.r-project.org/package=pkgdepR)
+[![](https://cranlogs.r-pkg.org/badges/rpsi)](https://cran.r-project.org/package=rpsi)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/rpsi)](https://cran.r-project.org/package=rpsi)
 [![R build
-status](https://github.com/edpeyton/pkgdepR/workflows/R-CMD-check/badge.svg)](https://github.com/edpeyton/pkgdepR/actions/)
+status](https://github.com/edpeyton/rpsi/workflows/R-CMD-check/badge.svg)](https://github.com/edpeyton/rpsi/actions/)
 [![CRAN
-status](https://www.r-pkg.org/badges/version/pkgdepR)](https://CRAN.R-project.org/package=pkgdepR)
+status](https://www.r-pkg.org/badges/version/rpsi)](https://CRAN.R-project.org/package=rpsi)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 
@@ -33,8 +33,7 @@ change in behaviour.
 These prescribed values are common in the credit risk literature but are
 without justification.
 
-In this package we try to address this blind application of the PSI in
-industry by applying the statistical properties (Yurdakul, 2018) that
+In this package we try to address this blind application of the PSI by applying the statistical properties (Yurdakul, 2018) that
 provide better meaning than those currently perpetuated in the industry.
 
 ## Moving away from arbitrary thresholds
