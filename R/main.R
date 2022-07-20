@@ -3,17 +3,25 @@
 
 
 #' @title Calculate PSI metric
-#' @description Calculates the PSI metric with thresholds calculated from Yurdakul, Bilal (2018).
-#' @param x A data frame containing the distinct
-#' @param y 
-#' @param var 
-#' @param random_base 
-#'
-#' @return
-#' @export
-#'
+#' @description Calculates the PSI metric with thresholds calculated from Yurdakul, Bilal (2018). \loadmathjax
+#' @param x A data frame containing the distinct groups and counts of the base distribution. Must contain columns \code{var} and \code{count}.
+#' @param y The comparison distribution in the same format as \code{x}.
+#' @param var The name of the column in \code{x} and \code{y} representing the discrete groups of the distributions.
+#' @param count The name of the column in \code{x} and \code{y} representing the count of observations in each group.
+#' @param random_base A logical value indicating whether the base distribution uesd for comparison is considered random or if it is considered a population.
 #' @examples
-psi = function(x, y, var, random_base = TRUE) {
+#' library(rpsi)
+#' library(dplyr)
+#' x = data.frame(x = rnorm(500, 0.1)) %>% mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) %>% group_by(VAL) %>% summarise(N = n())
+#' y = data.frame(x = rnorm(500, 0.1)) %>% mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) %>% group_by(VAL) %>% summarise(N = n())
+#' psi(x, y, var = "VAL", count = "N")
+#' @details See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations}{Yurdakul, Bilal (2018)} for details.
+#' 
+#' The PSI is shown to be approximately distributed as
+#' \deqn{PSI\sim\chi^{2}}
+#' @return An object of class \code{rpsi}. See \link[rpsi]{rpsi} for details.
+#' @export
+psi = function(x, y, var, count, random_base = TRUE) {
   
   stopifnot(
     "Input 'x' and 'y' must be data frames." = is.data.frame(x) & is.data.frame(y),
@@ -24,14 +32,14 @@ psi = function(x, y, var, random_base = TRUE) {
   )
   
   PSI = x %>% 
-    dplyr::group_by(TYPE, .drop = FALSE) %>% 
-    dplyr::summarise(N_X = sum(VALUE), .groups = "keep") %>%
+    dplyr::group_by(!!rlang::sym(var), .drop = FALSE) %>% 
+    dplyr::summarise(N_X = sum(!!rlang::sym(count)), .groups = "keep") %>%
     dplyr::ungroup() %>%
     dplyr::mutate(PROP_X = N_X/sum(N_X))
   
   PSI2 = y %>% 
-    dplyr::group_by(TYPE, .drop = FALSE) %>% 
-    dplyr::summarise(N_Y = sum(VALUE), .groups = "keep") %>%
+    dplyr::group_by(!!rlang::sym(var), .drop = FALSE) %>% 
+    dplyr::summarise(N_Y = sum(!!rlang::sym(count)), .groups = "keep") %>%
     dplyr::ungroup() %>%
     dplyr::mutate(PROP_Y = N_Y/sum(N_Y))
   
@@ -50,7 +58,7 @@ psi = function(x, y, var, random_base = TRUE) {
   B = nlevels(x[[var]])
   
   psi = sum(PSI[["PSI"]])
-  p.val = pchisq(psi/(1/N + 1/M), B - 1, lower.tail = FALSE)
+  p.val = stats::pchisq(psi/(1/N + 1/M), B - 1, lower.tail = FALSE)
   
   res = list(psi = psi,
              p.val = p.val,
@@ -66,9 +74,12 @@ psi = function(x, y, var, random_base = TRUE) {
   
 } 
 
-print.rpsi = function(x, crit_vals = c(0.95), ...) {
-  
-  
+#' @title Print rpsi object
+#' @param x An object of class \code{rpsi}.
+#' @param ... Redundant argument for consistency with method.
+#' @return No return value.
+#' @export
+print.rpsi = function(x, crit_vals = c(0.95, 0.99), accuracy = 0.001, ...) {
   
   cat("\n")
   cat(paste0("rpsi object\n"))
@@ -77,46 +88,55 @@ print.rpsi = function(x, crit_vals = c(0.95), ...) {
   cat(paste0("N = ", scales::comma(x$N), "\n"))
   cat(paste0("M = ", scales::comma(x$M), "\n"))
   cat(paste0("B = ", scales::comma(x$B), "\n"))
-  cat(paste0("PSI = ", scales::number(x$psi), "\n"))
-  sapply(crit_vals, function(i, x) {cat(paste0("PSI = ", scales::number(qchisq(i,  x$B - 1)*(1/x$N + 1/x$M)), "\n"))}, x = x)
-  
+  cat(paste0("PSI = ", scales::scientific(x$psi, accuracy = accuracy), "\n"))
+  cat(paste0("p-value = ", scales::scientific(x$p.val, accuracy = accuracy), "\n"))
+  sapply(crit_vals, function(i, x) {cat(paste0(scales::percent(i), " threshold = ", scales::scientific(stats::qchisq(i,  x$B - 1)*(1/x$N + 1/x$M), accuracy = accuracy), "\n"))}, x = x)
+  cat("\n")
   
 }
 
 
 
-
-plot.rpsi = function(x, crit_vals = c(0.95)) {
+#' @title Plot rpsi object
+#' @param x An object of class \code{rpsi}.
+#' @param ... Redundant argument for consistency with method.
+#' @return No return value.
+#' @export
+plot.rpsi = function(x, crit_vals = c(0.95, 0.99)) {
   
   CV = qchisq(crit_vals, res$B - 1)*(1/res$N + 1/res$M)
   
-  ggplot2::ggplot(data = data.frame(res$))
+  ggplot2::ggplot(data = data.frame(x = 1, y = res$psi, yintercept = CV)) +
+    ggplot2::geom_point(ggplot2::aes(x = x, y = y)) +
+    ggplot2::geom_hline(ggplot2::aes(yintercept = yintercept), linetype = "dashed") +
+    ggplot2::expand_limits(y = 0)
   
   
 }
 
 
+#' @title rpsi object
+#' @description An internal generic function. Methods for \code{rpsi} should only return \code{TRUE} if the class is \code{rpsi}.
+#' @param x Object to be tested.
+#'
+#' @return Boolean. \code{TRUE} when \code{x} is of class \code{rpsi}.
+#' @export
+is.rpsi = function(x) {
+  
+  inherits(x, "rpsi")
+  
+}
 
 
 
+#' @title Summarise rpsi object
+#' @param object An object of class \code{rpsi}.
+#' @param ... Redundant argument for consistency with method.
+#' @return No return value.
+#' @export
+summary.rpsi = function(object, crit_vals = c(0.95, 0.99), ...) {
+  
+  print.rpsi(x = object, crit_vals = crit_vals, ...)
+  
+}
 
-
-x = data.frame(TIME = seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month")) %>% 
-  mutate(A = sapply(1:120, function(i) {round(runif(1, 0, 1000), 0)}), 
-         B = sapply(1:120, function(i) {round(runif(1, 0, 1000), 0)})) %>% 
-  tidyr::pivot_longer(cols = c("A", "B"), names_to = "TYPE", values_to = "VALUE")
-
-index = "TIME"
-var = "TYPE"
-
-x = data.frame(POP = sapply(1:120, function(i) {rbinom(1, 1, 0.3)})) %>% 
-  mutate(A = sapply(1:120, function(i) {round(runif(1, 0, 1000), 0)}), 
-         B = sapply(1:120, function(i) {round(runif(1, 0, 1000), 0)})) %>% 
-  tidyr::pivot_longer(cols = c("A", "B"), names_to = "TYPE", values_to = "VALUE") %>%
-  mutate(TYPE = factor(TYPE))
-
-y = data.frame(POP = sapply(1:120, function(i) {rbinom(1, 1, 0.3)})) %>% 
-  mutate(A = sapply(1:120, function(i) {round(runif(1, 0, 1000), 0)}), 
-         B = sapply(1:120, function(i) {round(runif(1, 0, 1000), 0)})) %>% 
-  tidyr::pivot_longer(cols = c("A", "B"), names_to = "TYPE", values_to = "VALUE") %>%
-  mutate(TYPE = factor(TYPE))
