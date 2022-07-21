@@ -61,7 +61,7 @@ In those instances, the expression above simplifies. See (Yurdakul,
 The key thing to note is that a critical value that can be used as a threshold is simply
 
 ``` math
-CV_{\alpha} = \sim\chi^{2}_{\alpha,B-1}\cdotcdot(1/M+1/N)
+CV_{\alpha} = \sim\chi^{2}_{\alpha,B-1}\cdot(1/M+1/N)
 ```
 
 which is dependent on $M$, meaning that that the critical threshold will change with the sample size of the comparison distribution.
