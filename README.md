@@ -113,6 +113,7 @@ N = 10000
 ```
 
 ``` r
+# Base distribution
 x = data.frame(TYPE = factor(LETTERS[1:length(p)]), VALUE = N*p)
 x
 #>   TYPE VALUE
@@ -125,6 +126,7 @@ x
 ```
 
 ``` r
+# Comparison distribution over time
 y = sapply(seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month"), 
            function(i) {
              data.frame(TYPE = factor(sample(LETTERS[1:length(p)], 500, replace = TRUE, prob = p))) %>% mutate(DATE = i)
