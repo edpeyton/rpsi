@@ -63,6 +63,7 @@ In those instances, the expression above simplifies. See (Yurdakul,
 Using the package is quite simple. The main function is `rpsi::psi(...)`
 which takes in two discrete distributions for comparison. See `?rpsi::psi` for details.
 
+### Simple comparison of two distributions
 We can start with a simple example with random data:
 
 ``` r
@@ -101,6 +102,7 @@ plot(res, crit_val = 0.95)
 
 <img src="man/figures/unnamed-chunk-3-1.png" width="75%" />
 
+### Comparison over time
 Furthermore, we can perform the comparison between a base distribution
 and a comparison distribution over time.
 
