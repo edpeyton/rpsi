@@ -2,7 +2,7 @@
 #' @details
 #' The only function you're likely to need from rpsi is \link[rpsi]{psi}, which returns an object of class \code{rpsi}.
 #' 
-#' An object of class \code{rpsi} is a list with three named objects:
+#' An object of class \code{rpsi} is a list with the following named objects:
 ##' \itemize{
 ##'  \item{\strong{\code{psi}}}{: the PSI value.}
 ##'  \item{\strong{\code{p.val}}}{: the p-value where the null distribution is that the two samples are from the same population.}

@@ -4,7 +4,7 @@
 \alias{psi}
 \title{Calculate PSI metric}
 \usage{
-psi(x, y, var, count, random_base = TRUE)
+psi(x, y, var, count, date = NULL, random_base = TRUE, base_date = FALSE)
 }
 \arguments{
 \item{x}{A data frame containing the distinct groups and counts of the base distribution. Must contain columns \code{var} and \code{count}.}
@@ -15,24 +15,23 @@ psi(x, y, var, count, random_base = TRUE)
 
 \item{count}{The name of the column in \code{x} and \code{y} representing the count of observations in each group.}
 
+\item{date}{(Optional) The name of a column in \code{y} representing a date variable. The column \code{date} in \code{y} should be of class "Date". This is useful if making multiple
+comparisons between \code{y} and \code{x} over time.}
+
 \item{random_base}{A logical value indicating whether the base distribution uesd for comparison is considered random or if it is considered a population.}
 }
 \value{
 An object of class \code{rpsi}. See \link[rpsi]{rpsi} for details.
 }
 \description{
-Calculates the PSI metric with thresholds calculated from Yurdakul, Bilal (2018). \loadmathjax
+Calculates the Population Stability Index (PSI) metric with thresholds calculated from Yurdakul, Bilal (2018).\loadmathjax
 }
 \details{
 See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations}{Yurdakul, Bilal (2018)} for details.
 
-The PSI is shown to be approximately distributed as
-\deqn{PSI\sim\chi^{2}}
-}
-\examples{
-library(rpsi)
-library(dplyr)
-x = data.frame(x = rnorm(500, 0.1)) \%>\% mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) \%>\% group_by(VAL) \%>\% summarise(N = n())
-y = data.frame(x = rnorm(500, 0.1)) \%>\% mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) \%>\% group_by(VAL) \%>\% summarise(N = n())
-psi(x, y, var = "VAL", count = "N")
+The PSI is shown to be distributed as
+
+\mjdeqn{\text{PSI}\overset{\cdot}{\sim}\chi^{2}_{B-1}\cdot(1/M + 1/N)}{ascii}
+
+where \mjeqn{B}{ascii} is the number of discrete values of the distribution and \mjeqn{M}{ascii}, \mjeqn{N}{ascii} are the sizes of the comparison and base distributions, respectively.
 }

@@ -3,7 +3,6 @@
 
 # rpsi
 
-[![](https://cranlogs.r-pkg.org/badges/rpsi)](https://cran.r-project.org/package=rpsi)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/rpsi)](https://cran.r-project.org/package=rpsi)
 [![R build
 status](https://github.com/edpeyton/rpsi/workflows/R-CMD-check/badge.svg)](https://github.com/edpeyton/rpsi/actions/)
@@ -43,7 +42,7 @@ PSI was shown to have an approximate $\chi^{2}$ distribution. That
 is
 
 ``` math
-\text{PSI}\sim\chi^{2}_{\alpha,B-1}\cdot(1/M+1/N)
+\text{PSI}\sim\chi^{2}_{B-1}\cdot(1/M+1/N)
 ```
 
 where $B$ is the number of discrete values defining the distributions of
