@@ -31,7 +31,7 @@ See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&contex
 
 The PSI is shown to be distributed as
 
-\mjdeqn{\text{PSI}\overset{\cdot}{\sim}\chi^{2}_{B-1}\cdot(1/M + 1/N)}{ascii}
+\mjdeqn{PSI\sim\chi^{2}_{B-1}\cdot(1/M + 1/N)}{pdflatex}
 
 where \mjeqn{B}{ascii} is the number of discrete values of the distribution and \mjeqn{M}{ascii}, \mjeqn{N}{ascii} are the sizes of the comparison and base distributions, respectively.
 }
