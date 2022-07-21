@@ -192,10 +192,10 @@ plot.rpsi = function(x, crit_val = c(0.99), fill.col = "blues") {
     date = x$date
     var = x$var
     
-    g[[1]] = ggplot2::ggplot(data = CV) +
-      ggplot2::geom_line(ggplot2::aes(x = !!rlang::sym(x$date), y = PSI), color = "blue", size = 0.8) +
+    g[[1]] = ggplot2::ggplot(data = CV %>% dplyr::mutate(FILL = factor(ifelse(p.val<1-crit_val, 0, 1)))) +
+      ggplot2::geom_line(ggplot2::aes(x = !!rlang::sym(x$date), y = PSI, color = FILL), size = 0.8) +
       ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$date), y = PSI), color = "blue") +
-      sapply(unique(CV[[date]]), function(i, x) {ggplot2::geom_line(data = data.frame(DATE = c(CV[[date]][match(i, CV[[date]])-1], i, CV[[date]][match(i, CV[[date]])+1]), y = CV$CRIT[match(i, CV[[date]])]), ggplot2::aes(x = DATE, y = y), linetype = "dashed")}, x = x) +
+      sapply(unique(CV[[date]]), function(i, x) {ggplot2::geom_line(data = data.frame(DATE = c(CV[[date]][match(i, CV[[date]])-1], i, CV[[date]][match(i, CV[[date]])+1]), y = CV$CRIT[match(i, CV[[date]])]), ggplot2::aes(x = DATE, y = y), linetype = "solid")}, x = x) +
       ggplot2::geom_text(data = data.frame(x = max(CV[[date]]), 
                                            y = CV$CRIT[match(max(CV[[date]]), CV[[date]])], 
                                            label = paste0(scales::percent(crit_val), " threshold")), 
@@ -203,7 +203,8 @@ plot.rpsi = function(x, crit_val = c(0.99), fill.col = "blues") {
       ggplot2::expand_limits(y = 0) +
       ggplot2::theme_bw() +
       ggplot2::labs(title = "Population stability index",
-                    subtitle = "Over time")
+                    subtitle = "Over time") +
+      ggplot2::scale_color_manual(name = var, values = c("blue", "red"))
     
     g[[2]] = ggplot2::ggplot(data = CV %>% dplyr::mutate(FILL = factor(ifelse(p.val<1-crit_val, 0, 1)))) +
       ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$date), y = p.val, color = FILL), show.legend = FALSE) +
@@ -218,7 +219,7 @@ plot.rpsi = function(x, crit_val = c(0.99), fill.col = "blues") {
       ggplot2::labs(y = "p-value",
                     title = "p-values",
                     subtitle = "Over time") +
-      ggplot2::scale_color_manual(name = var, values = c("red", "blue"))
+      ggplot2::scale_color_manual(name = var, values = c("blue", "red"))
     
     g[[3]] = 
       ggplot2::ggplot(data = rbind(x$data %>% dplyr::mutate(POP = "Comparison"), 
@@ -239,7 +240,7 @@ plot.rpsi = function(x, crit_val = c(0.99), fill.col = "blues") {
                      panel.background = ggplot2::element_blank()) +
       ggplot2::scale_fill_manual(values = rpsi_pal(fill.col)(nlevels(x$data[[var]])))
     
-    return(invisible(g))
+    return(g)
     
   } else {
     
