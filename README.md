@@ -193,8 +193,8 @@ methods(class = "rpsi")
 
 ### Links
 
-Yurdakul, Bilal (2018). Statistical Properties of Population Stability
-Index.
+Yurdakul, Bilal (2018). [Statistical Properties of Population Stability
+Index.](https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations)
 
 ------------------------------------------------------------------------
 
