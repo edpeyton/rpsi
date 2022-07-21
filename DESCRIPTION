@@ -18,5 +18,6 @@ Imports:
   scales,
   mathjaxr,
   magrittr,
-  grDevices
+  grDevices,
+  latex2exp
 RdMacros: mathjaxr
