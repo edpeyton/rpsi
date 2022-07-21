@@ -36,6 +36,7 @@ The PSI is shown to be distributed as
 where \mjeqn{B}{ascii} is the number of discrete values of the distribution and \mjeqn{M}{ascii}, \mjeqn{N}{ascii} are the sizes of the comparison and base distributions, respectively.
 }
 \examples{
+\dontrun{
 library(rpsi)
 library(dplyr)
 x = data.frame(x = rnorm(500, 0.1)) \%>\% 
@@ -51,7 +52,7 @@ plot(res, crit_val = 0.95)
 
 #Example over time
 p = c(0.1, 0.2, 0.5, 0.05, 0.05, 0.1)
-N = 10000
+N = 1000
 
 x = data.frame(TYPE = factor(LETTERS[1:length(p)]), VALUE = N*p)
 y = sapply(seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month"), function(i) {
@@ -64,5 +65,6 @@ summarise(VALUE = n(), .groups = "keep") \%>\%
 ungroup()
 res = psi(x, y, var = "TYPE", count = "VALUE", date = "DATE")
 plot(res, crit_val = 0.95)
+}
 
 }

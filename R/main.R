@@ -12,6 +12,7 @@
 #' comparisons between \code{y} and \code{x} over time.
 #' @param random_base A logical value indicating whether the base distribution used for comparison is considered random or if it is considered a population.
 #' @examples
+#' \dontrun{
 #' library(rpsi)
 #' library(dplyr)
 #' x = data.frame(x = rnorm(500, 0.1)) %>% 
@@ -27,7 +28,7 @@
 #' 
 #' #Example over time
 #' p = c(0.1, 0.2, 0.5, 0.05, 0.05, 0.1)
-#' N = 10000
+#' N = 1000
 #' 
 #' x = data.frame(TYPE = factor(LETTERS[1:length(p)]), VALUE = N*p)
 #' y = sapply(seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month"), function(i) {
@@ -40,6 +41,7 @@
 #' ungroup()
 #' res = psi(x, y, var = "TYPE", count = "VALUE", date = "DATE")
 #' plot(res, crit_val = 0.95)
+#' }
 #' 
 #' @details See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations}{Yurdakul, Bilal (2018)} for details. 
 #' 
