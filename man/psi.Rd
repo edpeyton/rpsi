@@ -40,7 +40,8 @@ library(rpsi)
 library(dplyr)
 x = data.frame(x = rnorm(500, 0.1)) \%>\% mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) \%>\% group_by(VAL) \%>\% summarise(N = n())
 y = data.frame(x = rnorm(500, 0.1)) \%>\% mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) \%>\% group_by(VAL) \%>\% summarise(N = n())
-psi(x, y, var = "VAL", count = "N")
+res = psi(x, y, var = "VAL", count = "N")
+plot(res, crit_val = 0.95)
 
 #Example over time
 p = c(0.1, 0.2, 0.5, 0.05, 0.05, 0.1)
@@ -51,6 +52,6 @@ y = sapply(seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month"), func
   data.frame(TYPE = factor(sample(LETTERS[1:length(p)], 100, replace = TRUE, prob = p))) \%>\% mutate(DATE = i)
 }, simplify = FALSE) \%>\% bind_rows() \%>\% group_by(DATE, TYPE, .drop = FALSE) \%>\% summarise(VALUE = n(), .groups = "keep") \%>\% ungroup()
 res = psi(x, y, var = "TYPE", count = "VALUE", date = "DATE")
-plot(res, crit_vals = 0.95)
+plot(res, crit_val = 0.95)
 
 }

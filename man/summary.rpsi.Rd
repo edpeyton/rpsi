@@ -4,7 +4,7 @@
 \alias{summary.rpsi}
 \title{Summarise rpsi object}
 \usage{
-\method{summary}{rpsi}(object, crit_vals = c(0.95, 0.99), ...)
+\method{summary}{rpsi}(object, crit_val = 0.99, ...)
 }
 \arguments{
 \item{object}{An object of class \code{rpsi}.}

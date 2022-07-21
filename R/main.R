@@ -16,7 +16,8 @@
 #' library(dplyr)
 #' x = data.frame(x = rnorm(500, 0.1)) %>% mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) %>% group_by(VAL) %>% summarise(N = n())
 #' y = data.frame(x = rnorm(500, 0.1)) %>% mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) %>% group_by(VAL) %>% summarise(N = n())
-#' psi(x, y, var = "VAL", count = "N")
+#' res = psi(x, y, var = "VAL", count = "N")
+#' plot(res, crit_val = 0.95)
 #' 
 #' #Example over time
 #' p = c(0.1, 0.2, 0.5, 0.05, 0.05, 0.1)
@@ -27,7 +28,7 @@
 #'   data.frame(TYPE = factor(sample(LETTERS[1:length(p)], 100, replace = TRUE, prob = p))) %>% mutate(DATE = i)
 #' }, simplify = FALSE) %>% bind_rows() %>% group_by(DATE, TYPE, .drop = FALSE) %>% summarise(VALUE = n(), .groups = "keep") %>% ungroup()
 #' res = psi(x, y, var = "TYPE", count = "VALUE", date = "DATE")
-#' plot(res, crit_vals = 0.95)
+#' plot(res, crit_val = 0.95)
 #' 
 #' @details See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations}{Yurdakul, Bilal (2018)} for details.
 #' 
@@ -144,7 +145,9 @@ psi = function(x, y, var, count, date = NULL, random_base = TRUE) {
 #' @param ... Redundant argument for consistency with method.
 #' @return No return value.
 #' @export
-print.rpsi = function(x, crit_vals = c(0.95, 0.99), accuracy = 0.001, ...) {
+print.rpsi = function(x, crit_val = 0.99, accuracy = 0.001, ...) {
+  
+  crit_val = max(min(crit_val, 1), 0)
   
   cat("\n")
   cat(paste0("rpsi object\n"))
@@ -156,7 +159,7 @@ print.rpsi = function(x, crit_vals = c(0.95, 0.99), accuracy = 0.001, ...) {
   cat(paste0("PSI = ", ifelse(is.data.frame(x$psi), "Many values", scales::scientific(x$psi, accuracy = accuracy)), "\n"))
   cat(paste0("p-value = ", ifelse(is.data.frame(x$psi), "Many values", scales::scientific(x$p.val, accuracy = accuracy)), "\n"))
   if (!is.data.frame(x$M)) {
-    sapply(crit_vals, function(i, x) {cat(paste0(scales::percent(i), " threshold = ", scales::scientific(stats::qchisq(i,  x$B - 1)*(1/x$N + 1/x$M), accuracy = accuracy), "\n"))}, x = x)
+    sapply(crit_val, function(i, x) {cat(paste0(scales::percent(i), " threshold = ", scales::scientific(stats::qchisq(i,  x$B - 1)*(1/x$N + 1/x$M), accuracy = accuracy), "\n"))}, x = x)
   }
   cat("\n")
   
@@ -176,14 +179,14 @@ print.rpsi = function(x, crit_vals = c(0.95, 0.99), accuracy = 0.001, ...) {
 #' @examples
 #' @return A list of object of classes \code{gg} and \code{ggplot}.
 #' @export
-plot.rpsi = function(x, crit_vals = c(0.99), fill.col = "blues") {
+plot.rpsi = function(x, crit_val = c(0.99), fill.col = "blues") {
   
-  crit_vals = crit_vals[1]
+  crit_val = max(min(crit_val, 1), 0)
   
   stopifnot("Input 'fill.col' must be one of 'blues', 'reds', 'greens'." = (fill.col %in% rpsi_cols()))
   
   if (!is.null(x$date)) {
-    CV = x$p.val %>% dplyr::mutate(CRIT = qchisq(crit_vals, x$B - 1)*(1/x$N + 1/x$M$N_Y))
+    CV = x$p.val %>% dplyr::mutate(CRIT = qchisq(crit_val, x$B - 1)*(1/x$N + 1/x$M$N_Y))
     
     g = list()
     date = x$date
@@ -195,20 +198,20 @@ plot.rpsi = function(x, crit_vals = c(0.99), fill.col = "blues") {
       sapply(unique(CV[[date]]), function(i, x) {ggplot2::geom_line(data = data.frame(DATE = c(CV[[date]][match(i, CV[[date]])-1], i, CV[[date]][match(i, CV[[date]])+1]), y = CV$CRIT[match(i, CV[[date]])]), ggplot2::aes(x = DATE, y = y), linetype = "dashed")}, x = x) +
       ggplot2::geom_text(data = data.frame(x = max(CV[[date]]), 
                                            y = CV$CRIT[match(max(CV[[date]]), CV[[date]])], 
-                                           label = paste0(scales::percent(crit_vals), " threshold")), 
+                                           label = paste0(scales::percent(crit_val), " threshold")), 
                          ggplot2::aes(x = x, y = y, label = label, vjust = 1, hjust = 1)) +
       ggplot2::expand_limits(y = 0) +
       ggplot2::theme_bw() +
       ggplot2::labs(title = "Population stability index",
                     subtitle = "Over time")
     
-    g[[2]] = ggplot2::ggplot(data = CV %>% dplyr::mutate(FILL = factor(ifelse(p.val<1-crit_vals, 0, 1)))) +
+    g[[2]] = ggplot2::ggplot(data = CV %>% dplyr::mutate(FILL = factor(ifelse(p.val<1-crit_val, 0, 1)))) +
       ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$date), y = p.val, color = FILL), show.legend = FALSE) +
-      ggplot2::geom_hline(ggplot2::aes(yintercept = 1 - crit_vals), linetype = "dashed") +
+      ggplot2::geom_hline(ggplot2::aes(yintercept = 1 - crit_val), linetype = "dashed") +
       ggplot2::geom_hline(ggplot2::aes(yintercept = 0), linetype = "solid") +
       ggplot2::geom_text(data = data.frame(x = max(CV[[date]]), 
-                                           y = 1-crit_vals, 
-                                           label = paste0(scales::percent(1 - crit_vals))), 
+                                           y = 1-crit_val, 
+                                           label = paste0(scales::percent(1 - crit_val))), 
                          ggplot2::aes(x = x, y = y, label = label, vjust = -1, hjust = 1)) +
       ggplot2::expand_limits(y = 0) +
       ggplot2::theme_bw() +
@@ -239,15 +242,34 @@ plot.rpsi = function(x, crit_vals = c(0.99), fill.col = "blues") {
     return(invisible(g))
     
   } else {
-    CV = qchisq(crit_vals, x$B - 1)*(1/x$N + 1/x$M)
+    
+    CV = qchisq(crit_val, x$B - 1)
+    val = x$psi/(1/x$N + 1/x$M)
+    
+    g = ggplot2::ggplot(data.frame(x = c(0, qchisq(0.999999, x$B - 1))), ggplot2::aes(x)) +
+      ggplot2::stat_function(fun = function(...) {dchisq(..., df = x$B - 1)}, n = 3000) + 
+      ggplot2::stat_function(fun = function(...) {dchisq(..., df = x$B - 1)}, n = 3000, 
+                    xlim = c(CV, max(CV, qchisq(0.999999, x$B - 1))),
+                    geom = "area",
+                    fill = "#EC453C",
+                    alpha = 0.5) +
+        ggplot2::stat_function(fun = function(...) {dchisq(..., df = x$B - 1)}, 
+                               xlim = c(0, CV),
+                               geom = "area",
+                               fill = "#002F6C",
+                               alpha = 0.3) +
+      ggplot2::theme_bw() +
+      ggplot2::geom_hline(yintercept = 0, linetype = "dashed") +
+      ggplot2::geom_point(data = data.frame(x = val, y = dchisq(val, df = x$B - 1), col = ifelse(pchisq(val, df = x$B - 1) > crit_val, "1", "0")), ggplot2::aes(x = x, y = y, color = col), show.legend = FALSE)  +
+      ggplot2::scale_color_manual(name = "col", values = c("1" = "red", "0" = "blue")) +
+      ggplot2::labs(y = "Probability density",
+                    title = "Distribution comparison",
+                    subtitle = paste0("p-value = ", prettyNum(x$p.val))) +
+      ggplot2::geom_line(data = data.frame(x = val, y = seq(0, dchisq(val, df = x$B - 1), length.out = 100)), ggplot2::aes(x = x, y = y), linetype = "dashed")
+    
+    return(g)
+    
   }
-
-  
-  
-  ggplot2::ggplot(data = data.frame(x = 1, y = x$psi, yintercept = CV)) +
-    ggplot2::geom_point(ggplot2::aes(x = x, y = y)) +
-    ggplot2::geom_hline(ggplot2::aes(yintercept = yintercept), linetype = "dashed") +
-    ggplot2::expand_limits(y = 0)
   
   
 }
@@ -272,9 +294,9 @@ is.rpsi = function(x) {
 #' @param ... Redundant argument for consistency with method.
 #' @return No return value.
 #' @export
-summary.rpsi = function(object, crit_vals = c(0.95, 0.99), ...) {
+summary.rpsi = function(object, crit_val = 0.99, ...) {
   
-  print.rpsi(x = object, crit_vals = crit_vals, ...)
+  print.rpsi(x = object, crit_val = crit_val, ...)
   
 }
 
@@ -294,7 +316,7 @@ rpsi_palettes = function() {
   
   list(
     blues = c("#002F6C", "#376EE2", "#84DCE0"),
-    reds = c("#002F6C", "#376EE2", "#84DCE0")
+    reds = c("#DA1710", "#EC453C", "#FF7468")
   )
   
 }

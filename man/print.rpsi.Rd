@@ -4,7 +4,7 @@
 \alias{print.rpsi}
 \title{Print rpsi object}
 \usage{
-\method{print}{rpsi}(x, crit_vals = c(0.95, 0.99), accuracy = 0.001, ...)
+\method{print}{rpsi}(x, crit_val = 0.99, accuracy = 0.001, ...)
 }
 \arguments{
 \item{x}{An object of class \code{rpsi}.}
