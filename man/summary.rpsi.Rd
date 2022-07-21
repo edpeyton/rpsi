@@ -9,6 +9,8 @@
 \arguments{
 \item{object}{An object of class \code{rpsi}.}
 
+\item{crit_val}{The significance level to use.}
+
 \item{...}{Redundant argument for consistency with method.}
 }
 \value{

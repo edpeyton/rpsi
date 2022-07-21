@@ -4,10 +4,12 @@
 \alias{print.rpsi}
 \title{Print rpsi object}
 \usage{
-\method{print}{rpsi}(x, crit_val = 0.99, accuracy = 0.001, ...)
+\method{print}{rpsi}(x, crit_val = 0.99, ...)
 }
 \arguments{
 \item{x}{An object of class \code{rpsi}.}
+
+\item{crit_val}{The significance level to use.}
 
 \item{...}{Redundant argument for consistency with method.}
 }

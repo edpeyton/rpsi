@@ -27,7 +27,7 @@ An object of class \code{rpsi}. See \link[rpsi]{rpsi} for details.
 Calculates the Population Stability Index (PSI) metric with thresholds calculated from Yurdakul, Bilal (2018).\loadmathjax
 }
 \details{
-See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations}{Yurdakul, Bilal (2018)} for details.
+See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations}{Yurdakul, Bilal (2018)} for details.\loadmathjax 
 
 The PSI is shown to be distributed as
 
@@ -38,8 +38,14 @@ where \mjeqn{B}{ascii} is the number of discrete values of the distribution and 
 \examples{
 library(rpsi)
 library(dplyr)
-x = data.frame(x = rnorm(500, 0.1)) \%>\% mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) \%>\% group_by(VAL) \%>\% summarise(N = n())
-y = data.frame(x = rnorm(500, 0.1)) \%>\% mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) \%>\% group_by(VAL) \%>\% summarise(N = n())
+x = data.frame(x = rnorm(500, 0.1)) \%>\% 
+mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) \%>\% 
+group_by(VAL) \%>\% 
+summarise(N = n())
+y = data.frame(x = rnorm(500, 0.1)) \%>\% 
+mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) \%>\% 
+group_by(VAL) \%>\% 
+summarise(N = n())
 res = psi(x, y, var = "VAL", count = "N")
 plot(res, crit_val = 0.95)
 
@@ -49,8 +55,13 @@ N = 10000
 
 x = data.frame(TYPE = factor(LETTERS[1:length(p)]), VALUE = N*p)
 y = sapply(seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month"), function(i) {
-  data.frame(TYPE = factor(sample(LETTERS[1:length(p)], 100, replace = TRUE, prob = p))) \%>\% mutate(DATE = i)
-}, simplify = FALSE) \%>\% bind_rows() \%>\% group_by(DATE, TYPE, .drop = FALSE) \%>\% summarise(VALUE = n(), .groups = "keep") \%>\% ungroup()
+  data.frame(TYPE = factor(sample(LETTERS[1:length(p)], 100, replace = TRUE, prob = p))) \%>\% 
+  mutate(DATE = i)
+}, simplify = FALSE) \%>\% 
+bind_rows() \%>\% 
+group_by(DATE, TYPE, .drop = FALSE) \%>\% 
+summarise(VALUE = n(), .groups = "keep") \%>\% 
+ungroup()
 res = psi(x, y, var = "TYPE", count = "VALUE", date = "DATE")
 plot(res, crit_val = 0.95)
 

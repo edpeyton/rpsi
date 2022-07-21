@@ -11,9 +11,12 @@ BugReports: https://github.com/edpeyton/rpsi/issues
 Encoding: UTF-8
 RoxygenNote: 7.1.1
 Imports:
-  utils,
+  stats,
+  rlang,
   dplyr,
   ggplot2,
   scales,
-  mathjaxr
+  mathjaxr,
+  magrittr,
+  grDevices
 RdMacros: mathjaxr
