@@ -42,9 +42,7 @@ Better critical values have already been derived (Yurdakul, 2018). The
 PSI was shown to have an approximate $\chi^{2}$ distribution. That
 is
 
-``` math
-\text{PSI}\overset{\cdot}{\sim}\chi^{2}_{B-1}\cdot(1/M+1/N)
-```
+$\text{PSI}\overset{\cdot}{\sim}\chi^{2}_{B-1}\cdot(1/M+1/N)$
 
 where $B$ is the number of discrete values defining the distributions of
 interest and $(M,N)$ are the number of observations in each sample of
