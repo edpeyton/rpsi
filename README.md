@@ -58,6 +58,14 @@ distribution is considered to be a population and not a random sample.
 In those instances, the expression above simplifies. See (Yurdakul,
 2018) for details.
 
+The key thing to note is that a critical value that can be used as a threshold is simply
+
+``` math
+CV_{\alpha} = \sim\chi^{2}_{\alpha,B-1}\cdotcdot(1/M+1/N)
+```
+
+which is dependent on $M$, meaning that that the critical threshold will change with the sample size of the comparison distribution.
+
 ## Using `rpsi`
 
 Using the package is quite simple. The main function is `rpsi::psi(...)`
@@ -91,6 +99,8 @@ print(res)
 #> p-value = 4.48e-01
 #> 99% threshold = 4.54e-02
 ```
+
+Here the PSI value comes out as 0.0106 and the 99% threshold is 0.0454.
 
 We can also plot a visual representation of the result using the `plot`
 method for `rpsi` objects.
@@ -164,6 +174,10 @@ plot(res, crit_val = 0.95)
 <img src="man/figures/unnamed-chunk-7-2.png" width="75%" />
 
 <img src="man/figures/unnamed-chunk-7-3.png" width="75%" />
+
+
+Here we see that the PSI exceeds the threshold at multiple points, despite the comparison sample being generated from the same random variable as the base. The main driver
+of this behaviour is the difference in sample sizes between the base and comparison distributions.
 
 ### S3 methods for `rpsi` objects
 
