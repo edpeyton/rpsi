@@ -10,7 +10,7 @@ NULL
 
 
 #' @title Imported \code{rlang} dyn-dots operator
-#' @description Imported from \code{\link[rlang]{rlang}}.
+#' @description Imported from \code{\link[rlang]{dyn-dots}}.
 #' @importFrom rlang :=
 #' @name :=
 #' @rdname dyn-dots

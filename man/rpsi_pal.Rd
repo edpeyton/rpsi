@@ -11,7 +11,7 @@ rpsi_pal(palette = "blues", reverse = FALSE, ...)
 
 \item{reverse}{Whether to reverse the palette direction.}
 
-\item{...}{Other arguments passed onto \link[grDevices]{colorRampPalette}.}
+\item{...}{Other arguments passed onto \link[grDevices]{colorRamp}.}
 }
 \description{
 Define an `rpsi` colour palette

@@ -4,7 +4,7 @@
 \name{rpsi-package}
 \alias{rpsi}
 \alias{rpsi-package}
-\title{rpsi: Inference using the population stability index}
+\title{rpsi: Inference using the Population Stability Index}
 \description{
 Calculation of the population stability index (commonly used in credit risk) and the evaluation of meaningful thresholds for inferring stability.
 }

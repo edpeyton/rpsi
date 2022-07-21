@@ -4,5 +4,5 @@
 \alias{:=}
 \title{Imported \code{rlang} dyn-dots operator}
 \description{
-Imported from \code{\link[rlang]{rlang}}.
+Imported from \code{\link[rlang]{dyn-dots}}.
 }

@@ -41,7 +41,7 @@
 #' res = psi(x, y, var = "TYPE", count = "VALUE", date = "DATE")
 #' plot(res, crit_val = 0.95)
 #' 
-#' @details See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations}{Yurdakul, Bilal (2018)} for details.\loadmathjax 
+#' @details See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations}{Yurdakul, Bilal (2018)} for details. 
 #' 
 #' The PSI is shown to be distributed as
 #' 
@@ -332,7 +332,7 @@ rpsi_palettes = function() {
 #' @title Define an `rpsi` colour palette
 #' @param palette Must be a color from \link[rpsi]{rpsi_cols}.
 #' @param reverse Whether to reverse the palette direction.
-#' @param ... Other arguments passed onto \link[grDevices]{colorRampPalette}.
+#' @param ... Other arguments passed onto \link[grDevices]{colorRamp}.
 #' @export
 rpsi_pal = function(palette = "blues", reverse = FALSE, ...) {
   

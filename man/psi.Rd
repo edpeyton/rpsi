@@ -27,7 +27,7 @@ An object of class \code{rpsi}. See \link[rpsi]{rpsi} for details.
 Calculates the Population Stability Index (PSI) metric with thresholds calculated from Yurdakul, Bilal (2018).\loadmathjax
 }
 \details{
-See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations}{Yurdakul, Bilal (2018)} for details.\loadmathjax 
+See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations}{Yurdakul, Bilal (2018)} for details. 
 
 The PSI is shown to be distributed as
 
