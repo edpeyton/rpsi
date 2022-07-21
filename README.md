@@ -3,7 +3,6 @@
 
 # rpsi
 
-[![](https://cranlogs.r-pkg.org/badges/rpsi)](https://cran.r-project.org/package=rpsi)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/rpsi)](https://cran.r-project.org/package=rpsi)
 [![R build
 status](https://github.com/edpeyton/rpsi/workflows/R-CMD-check/badge.svg)](https://github.com/edpeyton/rpsi/actions/)
