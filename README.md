@@ -43,7 +43,7 @@ PSI was shown to have an approximate $\chi^{2}$ distribution. That
 is
 
 ``` math
-\text{PSI}\sim\chi^{2}_{B-1}\cdot(1/M+1/N)
+\text{PSI}\overset{\sim}{\cdot}\chi^{2}_{B-1}\cdot(1/M+1/N)
 ```
 
 where $B$ is the number of discrete values defining the distributions of
