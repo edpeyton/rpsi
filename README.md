@@ -42,7 +42,7 @@ Better critical values have already been derived (Yurdakul, 2018). The
 PSI was shown to have an approximate $\chi^{2}$ distribution. That
 is
 
-$\text{PSI}\overset{\cdot}{\sim}\chi^{2}_{B-1}\cdot(1/M+1/N)$
+$$\text{PSI}\overset{\cdot}{\sim}\chi^{2}_{B-1}\cdot(1/M+1/N)$$
 
 where $B$ is the number of discrete values defining the distributions of
 interest and $(M,N)$ are the number of observations in each sample of
@@ -57,9 +57,7 @@ In those instances, the expression above simplifies. See (Yurdakul,
 
 The key thing to note is that a critical value that can be used as a threshold is simply
 
-``` math
-CV_{\alpha} = \chi^{2}_{\alpha,B-1}\cdot(1/M+1/N)
-```
+$$CV_{\alpha} = \chi^{2}_{\alpha,B-1}\cdot(1/M+1/N)$$
 
 which is dependent on $M$, meaning that that the critical threshold will change with the sample size of the comparison distribution. This is the threshold value
 used instead of the arbitrary 0.02, 0.05, 0.1, etc. noted earlier.
