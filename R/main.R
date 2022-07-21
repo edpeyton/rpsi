@@ -10,7 +10,7 @@
 #' @param count The name of the column in \code{x} and \code{y} representing the count of observations in each group.
 #' @param date (Optional) The name of a column in \code{y} representing a date variable. The column \code{date} in \code{y} should be of class "Date". This is useful if making multiple
 #' comparisons between \code{y} and \code{x} over time.
-#' @param random_base A logical value indicating whether the base distribution uesd for comparison is considered random or if it is considered a population.
+#' @param random_base A logical value indicating whether the base distribution used for comparison is considered random or if it is considered a population.
 #' @examples
 #' library(rpsi)
 #' library(dplyr)
@@ -18,10 +18,17 @@
 #' y = data.frame(x = rnorm(500, 0.1)) %>% mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) %>% group_by(VAL) %>% summarise(N = n())
 #' psi(x, y, var = "VAL", count = "N")
 #' 
-#' x = data.frame(TIME = seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month")) %>% mutate(A = factor(rbinom(120, 1, 0.25))) %>% tidyr::pivot_longer(cols = c("A"), names_to = "TYPE", values_to = "VALUE")
-#' y = data.frame(TIME = seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month")) %>% mutate(A = factor(rbinom(120, 1, 0.25))) %>% tidyr::pivot_longer(cols = c("A"), names_to = "TYPE", values_to = "VALUE")
-#' psi(x, y, var = "VAL", count = "N", date = "TIME)
-#'
+#' #Example over time
+#' p = c(0.1, 0.2, 0.5, 0.05, 0.05, 0.1)
+#' N = 10000
+#' 
+#' x = data.frame(TYPE = factor(LETTERS[1:length(p)]), VALUE = N*p)
+#' y = sapply(seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month"), function(i) {
+#'   data.frame(TYPE = factor(sample(LETTERS[1:length(p)], 100, replace = TRUE, prob = p))) %>% mutate(DATE = i)
+#' }, simplify = FALSE) %>% bind_rows() %>% group_by(DATE, TYPE, .drop = FALSE) %>% summarise(VALUE = n(), .groups = "keep") %>% ungroup()
+#' res = psi(x, y, var = "TYPE", count = "VALUE", date = "DATE")
+#' plot(res, crit_vals = 0.95)
+#' 
 #' @details See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations}{Yurdakul, Bilal (2018)} for details.
 #' 
 #' The PSI is shown to be distributed as
@@ -31,18 +38,23 @@
 #' where \mjeqn{B}{ascii} is the number of discrete values of the distribution and \mjeqn{M}{ascii}, \mjeqn{N}{ascii} are the sizes of the comparison and base distributions, respectively.
 #' @return An object of class \code{rpsi}. See \link[rpsi]{rpsi} for details.
 #' @export
-psi = function(x, y, var, count, date = NULL, random_base = TRUE, base_date = FALSE) {
+psi = function(x, y, var, count, date = NULL, random_base = TRUE) {
   
   stopifnot(
+    "'var' must be a column in 'x' and 'y'." = var %in% names(x) & var %in% names(y),
+    "'count' must be a column in 'x' and 'y'." = count %in% names(x) & count %in% names(y),
+    "'date' must be a column in 'y'." = is.null(date) || date %in% names(y),
     "Input 'x' and 'y' must be data frames." = is.data.frame(x) & is.data.frame(y),
     "Inputs 'x' and 'y' must contain column 'var'." = var %in% names(x) & var %in% names(y),
-    "Column 'date' in 'x' must be of class 'Date'." = (is.null(date) | !is.null(date) && "Date" %in% class(y[[date]])),
+    "Column 'date' in 'y' must be of class 'Date'." = (is.null(date) | !is.null(date) && "Date" %in% class(y[[date]])),
     "Column 'var' in 'x' must be a factor." = is.factor(x[[var]]),
     "Column 'var' in 'y' must be a factor." = is.factor(x[[var]]),
     "Factor levels of 'var' in 'x' and 'y' must be identical." = identical(levels(x[[var]]), levels(y[[var]]))
   )
   
   if (!is.null(date)) {
+    
+    y = y %>% dplyr::group_by(!!!rlang::syms(c(date, var)), .drop = FALSE) %>% dplyr::summarise(!!count:=sum(!!rlang::sym(count)), .groups = "keep")
     
     res = sapply(unique(y[[date]]), function(i, x, y, var, count, random_base) {
       
@@ -75,9 +87,11 @@ psi = function(x, y, var, count, date = NULL, random_base = TRUE, base_date = FA
                B = B,
                N = N,
                M = M,
-               var = var)
+               var = var,
+               date = date)
     
     class(res) = "rpsi"
+    return(res)
     
   }
   
@@ -116,7 +130,8 @@ psi = function(x, y, var, count, date = NULL, random_base = TRUE, base_date = FA
              B = B,
              N = N,
              M = M,
-             var = var)
+             var = var,
+             date = date)
   
   class(res) = "rpsi"
   
@@ -136,11 +151,13 @@ print.rpsi = function(x, crit_vals = c(0.95, 0.99), accuracy = 0.001, ...) {
   cat(paste0("-----------\n"))
   cat(paste0("Unique values: ", paste0(levels(x$data[[x$var]]), collapse = ", "), "\n"))
   cat(paste0("N = ", scales::comma(x$N), "\n"))
-  cat(paste0("M = ", scales::comma(x$M), "\n"))
+  cat(paste0("M = ", ifelse(is.data.frame(x$M), "Many values", scales::comma(x$M)), "\n"))
   cat(paste0("B = ", scales::comma(x$B), "\n"))
-  cat(paste0("PSI = ", scales::scientific(x$psi, accuracy = accuracy), "\n"))
-  cat(paste0("p-value = ", scales::scientific(x$p.val, accuracy = accuracy), "\n"))
-  sapply(crit_vals, function(i, x) {cat(paste0(scales::percent(i), " threshold = ", scales::scientific(stats::qchisq(i,  x$B - 1)*(1/x$N + 1/x$M), accuracy = accuracy), "\n"))}, x = x)
+  cat(paste0("PSI = ", ifelse(is.data.frame(x$psi), "Many values", scales::scientific(x$psi, accuracy = accuracy)), "\n"))
+  cat(paste0("p-value = ", ifelse(is.data.frame(x$psi), "Many values", scales::scientific(x$p.val, accuracy = accuracy)), "\n"))
+  if (!is.data.frame(x$M)) {
+    sapply(crit_vals, function(i, x) {cat(paste0(scales::percent(i), " threshold = ", scales::scientific(stats::qchisq(i,  x$B - 1)*(1/x$N + 1/x$M), accuracy = accuracy), "\n"))}, x = x)
+  }
   cat("\n")
   
 }
@@ -157,13 +174,77 @@ print.rpsi = function(x, crit_vals = c(0.95, 0.99), accuracy = 0.001, ...) {
 #' @param alpha A transparency value to use for colors. Must be between 0 and 1.
 #' @param ... 
 #' @examples
-#' @return An object of classes \code{gg} and \code{ggplot}.
+#' @return A list of object of classes \code{gg} and \code{ggplot}.
 #' @export
-plot.rpsi = function(x, crit_vals = c(0.95, 0.99)) {
+plot.rpsi = function(x, crit_vals = c(0.99), fill.col = "blues") {
   
-  CV = qchisq(crit_vals, res$B - 1)*(1/res$N + 1/res$M)
+  crit_vals = crit_vals[1]
   
-  ggplot2::ggplot(data = data.frame(x = 1, y = res$psi, yintercept = CV)) +
+  stopifnot("Input 'fill.col' must be one of 'blues', 'reds', 'greens'." = (fill.col %in% rpsi_cols()))
+  
+  if (!is.null(x$date)) {
+    CV = x$p.val %>% dplyr::mutate(CRIT = qchisq(crit_vals, x$B - 1)*(1/x$N + 1/x$M$N_Y))
+    
+    g = list()
+    date = x$date
+    var = x$var
+    
+    g[[1]] = ggplot2::ggplot(data = CV) +
+      ggplot2::geom_line(ggplot2::aes(x = !!rlang::sym(x$date), y = PSI), color = "blue", size = 0.8) +
+      ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$date), y = PSI), color = "blue") +
+      sapply(unique(CV[[date]]), function(i, x) {ggplot2::geom_line(data = data.frame(DATE = c(CV[[date]][match(i, CV[[date]])-1], i, CV[[date]][match(i, CV[[date]])+1]), y = CV$CRIT[match(i, CV[[date]])]), ggplot2::aes(x = DATE, y = y), linetype = "dashed")}, x = x) +
+      ggplot2::geom_text(data = data.frame(x = max(CV[[date]]), 
+                                           y = CV$CRIT[match(max(CV[[date]]), CV[[date]])], 
+                                           label = paste0(scales::percent(crit_vals), " threshold")), 
+                         ggplot2::aes(x = x, y = y, label = label, vjust = 1, hjust = 1)) +
+      ggplot2::expand_limits(y = 0) +
+      ggplot2::theme_bw() +
+      ggplot2::labs(title = "Population stability index",
+                    subtitle = "Over time")
+    
+    g[[2]] = ggplot2::ggplot(data = CV %>% dplyr::mutate(FILL = factor(ifelse(p.val<1-crit_vals, 0, 1)))) +
+      ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$date), y = p.val, color = FILL), show.legend = FALSE) +
+      ggplot2::geom_hline(ggplot2::aes(yintercept = 1 - crit_vals), linetype = "dashed") +
+      ggplot2::geom_hline(ggplot2::aes(yintercept = 0), linetype = "solid") +
+      ggplot2::geom_text(data = data.frame(x = max(CV[[date]]), 
+                                           y = 1-crit_vals, 
+                                           label = paste0(scales::percent(1 - crit_vals))), 
+                         ggplot2::aes(x = x, y = y, label = label, vjust = -1, hjust = 1)) +
+      ggplot2::expand_limits(y = 0) +
+      ggplot2::theme_bw() +
+      ggplot2::labs(y = "p-value",
+                    title = "p-values",
+                    subtitle = "Over time") +
+      ggplot2::scale_color_manual(name = var, values = c("red", "blue"))
+    
+    g[[3]] = 
+      ggplot2::ggplot(data = rbind(x$data %>% dplyr::mutate(POP = "Comparison"), 
+                                   x$data %>% dplyr::mutate(POP = "Base") %>% dplyr::mutate(PROP_Y = PROP_X)), 
+                      ggplot2::aes(x = !!rlang::sym(date), y = PROP_Y, fill = !!rlang::sym(var))) +
+      ggplot2::geom_area() +
+      ggplot2::scale_y_continuous(labels = scales::percent, limits = c(0, 1), expand = c(0, 0)) +
+      ggplot2::scale_x_date(expand = c(0, 0)) +
+      ggplot2::labs(y = NULL,
+                    title = "Distributions",
+                    subtitle = "Over time") +
+      ggplot2::facet_wrap(. ~ POP) +
+      ggplot2::theme(axis.title.y = ggplot2::element_blank(),
+                     axis.ticks.y = ggplot2::element_blank(),
+                     panel.grid.major = ggplot2::element_blank(),
+                     panel.grid.minor = ggplot2::element_blank(),
+                     panel.border = ggplot2::element_blank(),
+                     panel.background = ggplot2::element_blank()) +
+      ggplot2::scale_fill_manual(values = rpsi_pal(fill.col)(nlevels(x$data[[var]])))
+    
+    return(invisible(g))
+    
+  } else {
+    CV = qchisq(crit_vals, x$B - 1)*(1/x$N + 1/x$M)
+  }
+
+  
+  
+  ggplot2::ggplot(data = data.frame(x = 1, y = x$psi, yintercept = CV)) +
     ggplot2::geom_point(ggplot2::aes(x = x, y = y)) +
     ggplot2::geom_hline(ggplot2::aes(yintercept = yintercept), linetype = "dashed") +
     ggplot2::expand_limits(y = 0)
@@ -198,17 +279,44 @@ summary.rpsi = function(object, crit_vals = c(0.95, 0.99), ...) {
 }
 
 
-# x = data.frame(TIME = seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month")) %>%
-#   mutate(A = sapply(1:120, function(i) {round(rnorm(1, 10), 0)}),
-#          B = sapply(1:120, function(i) {round(rnorm(1, 10), 0)})) %>%
-#   tidyr::pivot_longer(cols = c("A", "B"), names_to = "TYPE", values_to = "VALUE") %>% 
-#   mutate(TYPE = as.factor(TYPE))
+# p = c(0.1, 0.2, 0.5, 0.05, 0.05, 0.1)
+# N = 10000
 # 
-# 
-# y = data.frame(TIME = seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month")) %>%
-#   mutate(A = sapply(1:120, function(i) {round(rnorm(1, 10), 0)}),
-#          B = sapply(1:120, function(i) {round(rnorm(1, 10), 0)})) %>%
-#   tidyr::pivot_longer(cols = c("A", "B"), names_to = "TYPE", values_to = "VALUE") %>% 
-#   mutate(TYPE = as.factor(TYPE))
-# 
+# x = data.frame(TYPE = factor(LETTERS[1:length(p)]), VALUE = N*p)
+# y = sapply(seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month"), function(i) {
+#   data.frame(TYPE = factor(sample(LETTERS[1:length(p)], 100, replace = TRUE, prob = p))) %>% mutate(DATE = i)
+#   }, simplify = FALSE) %>% bind_rows() %>% group_by(DATE, TYPE, .drop = FALSE) %>% summarise(VALUE = n(), .groups = "keep") %>% ungroup()
+
+
+
+#' @export
+rpsi_palettes = function() {
+  
+  list(
+    blues = c("#002F6C", "#376EE2", "#84DCE0"),
+    reds = c("#002F6C", "#376EE2", "#84DCE0")
+  )
+  
+}
+
+#' @export
+rpsi_pal = function(palette = "blues", reverse = FALSE, ...) {
+  
+  pal = rpsi_palettes()[[palette]]
+  
+  if (reverse) {
+    pal = rev(pal)
+  }
+  
+  return(colorRampPalette(pal, ...))
+  
+}
+
+#' @export
+rpsi_cols = function() {
+  
+  return(c("blues", "reds", "greens"))
+  
+}
+
 

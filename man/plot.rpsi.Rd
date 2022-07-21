@@ -4,16 +4,26 @@
 \alias{plot.rpsi}
 \title{Plot rpsi object}
 \usage{
-\method{plot}{rpsi}(x, crit_vals = c(0.95, 0.99))
+\method{plot}{rpsi}(x, crit_vals = c(0.99), fill.col = "blues")
 }
 \arguments{
-\item{x}{An object of class \code{rpsi}.}
+\item{x}{An object of class \code{pkgdepR}.}
 
-\item{...}{Redundant argument for consistency with method.}
+\item{width}{The width of the vis.js render.}
+
+\item{height}{The height of the vis.js render.}
+
+\item{main}{The title. To remove the title, pass \code{list(text = NULL)}.}
+
+\item{submain}{The subtitle. To remove the subtitle, pass \code{list(text = NULL)}.}
+
+\item{alpha}{A transparency value to use for colors. Must be between 0 and 1.}
+
+\item{...}{}
 }
 \value{
-No return value.
+A list of object of classes \code{gg} and \code{ggplot}.
 }
 \description{
-Plot rpsi object
+This function
 }
