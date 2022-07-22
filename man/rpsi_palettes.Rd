@@ -6,6 +6,9 @@
 \usage{
 rpsi_palettes()
 }
+\value{
+A list of colour palette definitions.
+}
 \description{
 `rpsi` colour palettes
 }

@@ -12,7 +12,7 @@
 #' comparisons between \code{y} and \code{x} over time.
 #' @param random_base A logical value indicating whether the base distribution used for comparison is considered random or if it is considered a population.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(rpsi)
 #' library(dplyr)
 #' x = data.frame(x = rnorm(500, 0.1)) %>% 
@@ -31,7 +31,7 @@
 #' N = 1000
 #' 
 #' x = data.frame(TYPE = factor(LETTERS[1:length(p)]), VALUE = N*p)
-#' y = sapply(seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month"), function(i) {
+#' y = sapply(seq.Date(as.Date("2010-01-01"), as.Date("2013-12-01"), "month"), function(i) {
 #'   data.frame(TYPE = factor(sample(LETTERS[1:length(p)], 100, replace = TRUE, prob = p))) %>% 
 #'   mutate(DATE = i)
 #' }, simplify = FALSE) %>% 
@@ -43,14 +43,14 @@
 #' plot(res, crit_val = 0.95)
 #' }
 #' 
-#' @details See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations}{Yurdakul, Bilal (2018)} for details. 
+#' @details See \href{https://www.risk.net/journal-of-risk-model-validation/7725371/statistical-properties-of-the-population-stability-index}{Yurdakul & Naranjo (2020)} for details. 
 #' 
 #' The PSI is shown to be distributed as
 #' 
 #' \mjdeqn{PSI\sim\chi^{2}_{B-1}\cdot(1/M + 1/N)}{pdflatex}
 #' 
 #' where \mjeqn{B}{ascii} is the number of discrete values of the distribution and \mjeqn{M}{ascii}, \mjeqn{N}{ascii} are the sizes of the comparison and base distributions, respectively.
-#' @return An object of class \code{rpsi}. See \link[rpsi]{rpsi} for details.
+#' @return An object of class \code{rpsi}. See \link[rpsi]{rpsi} for details of the object class.
 #' @export
 psi = function(x, y, var, count, date = NULL, random_base = TRUE) {
   
@@ -191,7 +191,7 @@ print.rpsi = function(x, crit_val = 0.99, ...) {
 #' @param ... Redundant argument for consistency with method.
 #' @return A list of object of classes \code{gg} and \code{ggplot}.
 #' @export
-plot.rpsi = function(x, crit_val = c(0.99), fill.col = "blues", ...) {
+plot.rpsi = function(x, crit_val = 0.99, fill.col = "blues", ...) {
   
   FILL = label = PROP_X = PROP_Y = N_X = N_Y = DATE = y = PSI = p.val = NULL
   
@@ -206,7 +206,7 @@ plot.rpsi = function(x, crit_val = c(0.99), fill.col = "blues", ...) {
     date = x$date
     var = x$var
     
-    g[[1]] = ggplot2::ggplot(data = CV %>% dplyr::mutate(FILL = factor(ifelse(p.val<1-crit_val, 0, 1)))) +
+    g[[1]] = ggplot2::ggplot(data = CV %>% dplyr::mutate(FILL = factor(ifelse(p.val<1-crit_val, "0", "1")))) +
       ggplot2::geom_line(ggplot2::aes(x = !!rlang::sym(x$date), y = PSI), size = 0.8, color = "blue") +
       ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$date), y = PSI, color = FILL), show.legend = FALSE) +
       sapply(unique(CV[[date]]), function(i, x) {ggplot2::geom_line(data = data.frame(DATE = c(CV[[date]][match(i, CV[[date]])-1], i, CV[[date]][match(i, CV[[date]])+1]), y = CV$CRIT[match(i, CV[[date]])]), ggplot2::aes(x = DATE, y = y), linetype = "solid")}, x = x) +
@@ -220,7 +220,7 @@ plot.rpsi = function(x, crit_val = c(0.99), fill.col = "blues", ...) {
                     subtitle = "Over time") +
       ggplot2::scale_color_manual(name = var, values = c("red", "blue"))
     
-    g[[2]] = ggplot2::ggplot(data = CV %>% dplyr::mutate(FILL = factor(ifelse(p.val<1-crit_val, 0, 1)))) +
+    g[[2]] = ggplot2::ggplot(data = CV %>% dplyr::mutate(FILL = factor(ifelse(p.val<1-crit_val, "0", "1")))) +
       ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$date), y = p.val, color = FILL), show.legend = FALSE) +
       ggplot2::geom_hline(ggplot2::aes(yintercept = 1 - crit_val), linetype = "dashed") +
       ggplot2::geom_hline(ggplot2::aes(yintercept = 0), linetype = "solid") +
@@ -321,6 +321,7 @@ summary.rpsi = function(object, crit_val = 0.99, ...) {
 
 
 #' @title `rpsi` colour palettes
+#' @return A list of colour palette definitions.
 #' @export
 rpsi_palettes = function() {
   
@@ -336,6 +337,7 @@ rpsi_palettes = function() {
 #' @param palette Must be a color from \link[rpsi]{rpsi_cols}.
 #' @param reverse Whether to reverse the palette direction.
 #' @param ... Other arguments passed onto \link[grDevices]{colorRamp}.
+#' @return A colour palette function object.
 #' @export
 rpsi_pal = function(palette = "blues", reverse = FALSE, ...) {
   
@@ -350,6 +352,7 @@ rpsi_pal = function(palette = "blues", reverse = FALSE, ...) {
 }
 
 #' @title Available `rpsi` colour palette themes
+#' @return A vector of available colour strings.
 #' @export
 rpsi_cols = function() {
   

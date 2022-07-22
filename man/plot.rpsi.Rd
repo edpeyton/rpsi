@@ -4,7 +4,7 @@
 \alias{plot.rpsi}
 \title{Plot rpsi object}
 \usage{
-\method{plot}{rpsi}(x, crit_val = c(0.99), fill.col = "blues", ...)
+\method{plot}{rpsi}(x, crit_val = 0.99, fill.col = "blues", ...)
 }
 \arguments{
 \item{x}{An object of class \code{pkgdepR}.}

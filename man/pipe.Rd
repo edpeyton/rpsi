@@ -3,6 +3,9 @@
 \name{\%>\%}
 \alias{\%>\%}
 \title{Imported \code{magrittr} forward-pipe operator}
+\value{
+No return value.
+}
 \description{
 Imported from \code{\link[magrittr]{magrittr}}.
 }

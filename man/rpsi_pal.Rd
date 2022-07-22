@@ -13,6 +13,9 @@ rpsi_pal(palette = "blues", reverse = FALSE, ...)
 
 \item{...}{Other arguments passed onto \link[grDevices]{colorRamp}.}
 }
+\value{
+A colour palette function object.
+}
 \description{
 Define an `rpsi` colour palette
 }

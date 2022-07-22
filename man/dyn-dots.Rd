@@ -3,6 +3,9 @@
 \name{:=}
 \alias{:=}
 \title{Imported \code{rlang} dyn-dots operator}
+\value{
+No return value.
+}
 \description{
 Imported from \code{\link[rlang]{dyn-dots}}.
 }

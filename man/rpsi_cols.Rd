@@ -6,6 +6,9 @@
 \usage{
 rpsi_cols()
 }
+\value{
+A vector of available colour strings.
+}
 \description{
 Available `rpsi` colour palette themes
 }

@@ -5,6 +5,7 @@
 #' @importFrom magrittr %>%
 #' @name %>%
 #' @rdname pipe
+#' @return No return value.
 #' @export
 NULL
 
@@ -14,6 +15,7 @@ NULL
 #' @importFrom rlang :=
 #' @name :=
 #' @rdname dyn-dots
+#' @return No return value.
 #' @export
 NULL
 

@@ -9,7 +9,8 @@
 ##'  \item{\strong{\code{data}}}{: a data frame of the calculations.}
 ##'  \item{\strong{\code{M}}}{: the comparison distribution sample size.}
 ##'  \item{\strong{\code{N}}}{: the base distribution sample size.}
-##'  \item{\strong{\code{var}}}{: the name of the column in \code{x} in the call to \code{rpsi(x, ...)} representing the discrete groups of the distributions.}
+##'  \item{\strong{\code{var}}}{: the name of the column in \code{x} in the call to \code{\link[rpsi:psi]{psi(x, y, ...)}} representing the discrete groups of the distributions.}
+##'  \item{\strong{\code{date}}}{: the name of the column in \code{y} in the call to \code{\link[rpsi:psi]{psi(x, y, ...)}} representing the date variable (if any).}
 ##' }
 #' @keywords internal
 "_PACKAGE"

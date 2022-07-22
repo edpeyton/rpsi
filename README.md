@@ -33,12 +33,12 @@ These prescribed values are common in the credit risk literature but are
 without justification.
 
 In this package we try to address this blind application of the PSI in
-industry by applying the statistical properties (Yurdakul, 2018) that
+industry by applying the statistical properties (Yurdakul & Naranjo, 2020) that
 provide better meaning than those currently perpetuated in the industry.
 
 ## Moving away from arbitrary thresholds
 
-Better critical values have already been derived (Yurdakul, 2018). The
+Better critical values have already been derived (Yurdakul & Naranjo, 2020). The
 PSI was shown to have an approximate $\chi^{2}$ distribution. That
 is
 
@@ -52,8 +52,8 @@ Therefore, it is simple to obtain critical thresholds for a PSI for a
 chosen confidence level $\alpha$. In the case above, both distributions are
 treated as random. However, there are contexts where the base
 distribution is considered to be a population and not a random sample.
-In those instances, the expression above simplifies. See (Yurdakul,
-2018) for details.
+In those instances, the expression above simplifies. See (Yurdakul & Naranjo,
+2020) for details.
 
 The key thing to note is that a critical value that can be used as a threshold is simply
 
@@ -189,8 +189,8 @@ methods(class = "rpsi")
 
 ### Links
 
-Yurdakul, Bilal (2018). [Statistical Properties of Population Stability
-Index.](https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations)
+Yurdakul & Naranjo (2020). [Statistical Properties of Population Stability
+Index.](https://www.risk.net/journal-of-risk-model-validation/7725371/statistical-properties-of-the-population-stability-index)
 
 ------------------------------------------------------------------------
 

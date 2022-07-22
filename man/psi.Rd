@@ -21,13 +21,13 @@ comparisons between \code{y} and \code{x} over time.}
 \item{random_base}{A logical value indicating whether the base distribution used for comparison is considered random or if it is considered a population.}
 }
 \value{
-An object of class \code{rpsi}. See \link[rpsi]{rpsi} for details.
+An object of class \code{rpsi}. See \link[rpsi]{rpsi} for details of the object class.
 }
 \description{
 Calculates the Population Stability Index (PSI) metric with thresholds calculated from Yurdakul, Bilal (2018).\loadmathjax
 }
 \details{
-See \href{https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4249&context=dissertations}{Yurdakul, Bilal (2018)} for details. 
+See \href{https://www.risk.net/journal-of-risk-model-validation/7725371/statistical-properties-of-the-population-stability-index}{Yurdakul & Naranjo (2020)} for details. 
 
 The PSI is shown to be distributed as
 
@@ -36,7 +36,7 @@ The PSI is shown to be distributed as
 where \mjeqn{B}{ascii} is the number of discrete values of the distribution and \mjeqn{M}{ascii}, \mjeqn{N}{ascii} are the sizes of the comparison and base distributions, respectively.
 }
 \examples{
-\dontrun{
+\donttest{
 library(rpsi)
 library(dplyr)
 x = data.frame(x = rnorm(500, 0.1)) \%>\% 
@@ -55,7 +55,7 @@ p = c(0.1, 0.2, 0.5, 0.05, 0.05, 0.1)
 N = 1000
 
 x = data.frame(TYPE = factor(LETTERS[1:length(p)]), VALUE = N*p)
-y = sapply(seq.Date(as.Date("2010-01-01"), as.Date("2019-12-01"), "month"), function(i) {
+y = sapply(seq.Date(as.Date("2010-01-01"), as.Date("2013-12-01"), "month"), function(i) {
   data.frame(TYPE = factor(sample(LETTERS[1:length(p)], 100, replace = TRUE, prob = p))) \%>\% 
   mutate(DATE = i)
 }, simplify = FALSE) \%>\% 
