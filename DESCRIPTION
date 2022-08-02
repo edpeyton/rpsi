@@ -11,7 +11,6 @@ License: MIT + file LICENSE
 BugReports: https://github.com/edpeyton/rpsi/issues
 Encoding: UTF-8
 RoxygenNote: 7.1.1
-Depends: base, stats, R (>= 4.0.0)
 Imports:
   stats,
   rlang,
