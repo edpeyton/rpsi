@@ -80,10 +80,21 @@ library(dplyr)
 
 set.seed(1234)
 
+p = c(0.05, 0.45, 0.45, 0.05)
+
 # Generate some data
 x = data.frame(table(factor(sample(LETTERS[1:length(p)], 500, replace = TRUE, prob = p))))
 y = data.frame(table(factor(sample(LETTERS[1:length(p)], 500, replace = TRUE, prob = p))))
 
+x
+#>   Var1 Freq
+#> 1    A   31
+#> 2    B  222
+#> 3    C  222
+#> 4    D   25
+```
+
+``` r
 # Calculate the PSI
 res = psi(x, y, var = "Var1", count = "Freq")
 
