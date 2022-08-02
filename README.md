@@ -32,9 +32,8 @@ change in behaviour.
 These prescribed values are common in the credit risk literature but are
 without justification.
 
-In this package we try to address this blind application of the PSI in
-industry by applying the statistical properties (Yurdakul & Naranjo, 2020) that
-provide better meaning than those currently perpetuated in the industry.
+In this package we try to address this blind application of the PSI by utilizing its statistical properties (Yurdakul & Naranjo, 2020), 
+which provides better meaning than the approaches currently perpetuated in the industry.
 
 *****
 

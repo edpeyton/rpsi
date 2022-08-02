@@ -28,6 +28,8 @@ method_names = function(x) {
 #' @export
 get_ci = function(x, method = "sisonglaz", conf.level = 0.95) {
   
+  CHK1 = CHK2 = LINE = LWR = UPR = label = PROP_X = N_Y = NULL
+  
   method = match.arg(arg = method, choices = c("sisonglaz", "cplus1", "goodman", "wald", "waldcc", "wilson"))
   
   if ("rpsi_time" %in% class(x)) {

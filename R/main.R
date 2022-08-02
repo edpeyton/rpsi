@@ -200,7 +200,7 @@ print.rpsi = function(x, crit_val = 0.99, ...) {
 #' @export
 plot.rpsi = function(x, crit_val = 0.99, fill.col = "blues", ...) {
   
-  FILL = label = PROP_X = PROP_Y = N_X = N_Y = DATE = y = PSI = p.val = NULL
+  FILL = CHK1 = CHK2 = LINE = LWR = UPR = label = PROP_X = PROP_Y = N_X = N_Y = DATE = y = PSI = p.val = NULL
   
   crit_val = max(min(crit_val, 1), 0)
   
@@ -216,7 +216,7 @@ plot.rpsi = function(x, crit_val = 0.99, fill.col = "blues", ...) {
     var = x$var
     
     g[[1]] = ggplot2::ggplot(data = CV %>% dplyr::mutate(FILL = factor(ifelse(p.val<1-crit_val, "0", "1")))) +
-      ggplot2::geom_line(ggplot2::aes(x = !!rlang::sym(x$date), y = PSI), size = 0.8, color = "blue", alpha = 0.5) +
+      ggplot2::geom_line(ggplot2::aes(x = !!rlang::sym(x$date), y = PSI), size = 0.8, color = "blue") +
       ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$date), y = PSI, color = FILL), show.legend = FALSE) +
       sapply(unique(CV[[date]]), function(i, x) {ggplot2::geom_line(data = data.frame(DATE = c(CV[[date]][match(i, CV[[date]])-1], i, CV[[date]][match(i, CV[[date]])+1]), y = CV$CRIT[match(i, CV[[date]])]), ggplot2::aes(x = DATE, y = y), linetype = "solid")}, x = x) +
       ggplot2::geom_text(data = data.frame(x = max(CV[[date]]), 
@@ -230,7 +230,7 @@ plot.rpsi = function(x, crit_val = 0.99, fill.col = "blues", ...) {
       ggplot2::scale_color_manual(name = var, values = c("0" = "red", "1" = "blue"))
     
     g[[2]] = ggplot2::ggplot(data = CV %>% dplyr::mutate(FILL = factor(ifelse(p.val<1-crit_val, "0", "1")))) +
-      ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$date), y = p.val, color = FILL), show.legend = FALSE, alpha = 0.5) +
+      ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$date), y = p.val, color = FILL), show.legend = FALSE) +
       ggplot2::geom_hline(ggplot2::aes(yintercept = 1 - crit_val), linetype = "dashed") +
       ggplot2::geom_hline(ggplot2::aes(yintercept = 0), linetype = "solid") +
       ggplot2::geom_text(data = data.frame(x = max(CV[[date]]), 
@@ -269,10 +269,10 @@ plot.rpsi = function(x, crit_val = 0.99, fill.col = "blues", ...) {
     g[[4]] = ggplot2::ggplot(data = ts$ts) +
       ggplot2::geom_line(ggplot2::aes(x = DATE, y = LWR), color = "darkgrey") +
       ggplot2::geom_line(ggplot2::aes(x = DATE, y = UPR), color = "darkgrey") +
-      ggplot2::geom_point(ggplot2::aes(x = DATE, y = LWR, color = CHK1), size = 1, alpha = 0.5) +
-      ggplot2::geom_point(ggplot2::aes(x = DATE, y = UPR, color = CHK2), size = 1, alpha = 0.5) +
+      ggplot2::geom_point(ggplot2::aes(x = DATE, y = LWR, color = CHK1), size = 1) +
+      ggplot2::geom_point(ggplot2::aes(x = DATE, y = UPR, color = CHK2), size = 1) +
       ggplot2::geom_hline(ggplot2::aes(yintercept = PROP_X, linetype = LINE)) +
-      ggplot2::facet_wrap(as.formula(paste("~", x$var)), scales = "fixed") +
+      ggplot2::facet_wrap(stats::as.formula(paste("~", x$var)), scales = "fixed") +
       ggplot2::theme_bw() +
       ggplot2::scale_color_manual(values = c("Breach" = "red", "Within interval" = "blue")) +
       ggplot2::scale_linetype_manual(name = "LINE", values = "dashed") +
