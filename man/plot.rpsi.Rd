@@ -16,7 +16,7 @@
 \item{...}{Redundant argument for consistency with method.}
 }
 \value{
-A list of object of classes \code{gg} and \code{ggplot}.
+A list of object(s) of classes \code{gg} and \code{ggplot}.
 }
 \description{
 This function

@@ -11,19 +11,19 @@
 #' @param date (Optional) The name of a column in \code{y} representing a date variable. The column \code{date} in \code{y} should be of class "Date". This is useful if making multiple
 #' comparisons between \code{y} and \code{x} over time.
 #' @param random_base A logical value indicating whether the base distribution used for comparison is considered random or if it is considered a population.
+#' 
+#' When \code{TRUE}, the values of \code{count} in the base distribution \code{x}
 #' @examples
 #' \donttest{
 #' library(rpsi)
 #' library(dplyr)
-#' x = data.frame(x = rnorm(500, 0.1)) %>% 
-#' mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) %>% 
-#' group_by(VAL) %>% 
-#' summarise(N = n())
-#' y = data.frame(x = rnorm(500, 0.1)) %>% 
-#' mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) %>% 
-#' group_by(VAL) %>% 
-#' summarise(N = n())
-#' res = psi(x, y, var = "VAL", count = "N")
+#'
+#' p = c(0.05, 0.45, 0.45, 0.05)
+#' 
+#' x = data.frame(table(factor(sample(LETTERS[1:length(p)], 500, replace = TRUE, prob = p))))
+#' y = data.frame(table(factor(sample(LETTERS[1:length(p)], 500, replace = TRUE, prob = p))))
+#' 
+#' res = psi(x, y, var = "Var1", count = "Freq")
 #' plot(res, crit_val = 0.95)
 #' 
 #' #Example over time
@@ -41,6 +41,13 @@
 #' ungroup()
 #' res = psi(x, y, var = "TYPE", count = "VALUE", date = "DATE")
 #' plot(res, crit_val = 0.95)
+#' 
+#' 
+#' # Example with random_base = FALSE
+#' x = data.frame(TYPE = factor(LETTERS[1:length(p)]), VALUE = p)
+#' res = psi(x, y, var = "TYPE", count = "VALUE", date = "DATE", random_base = FALSE)
+#' plot(res, crit_val = 0.95)
+#' 
 #' }
 #' 
 #' @details See \href{https://www.risk.net/journal-of-risk-model-validation/7725371/statistical-properties-of-the-population-stability-index}{Yurdakul & Naranjo (2020)} for details. 
@@ -106,7 +113,7 @@ psi = function(x, y, var, count, date = NULL, random_base = TRUE) {
                var = var,
                date = date)
     
-    class(res) = "rpsi"
+    class(res) = c("rpsi", "rpsi_time")
     return(res)
     
   }
@@ -170,11 +177,11 @@ print.rpsi = function(x, crit_val = 0.99, ...) {
   cat(paste0("-----------\n"))
   cat(paste0("Unique values: ", paste0(levels(x$data[[x$var]]), collapse = ", "), "\n"))
   cat(paste0("N = ", scales::comma(x$N), "\n"))
-  cat(paste0("M = ", ifelse(is.data.frame(x$M), "Many values", scales::comma(x$M)), "\n"))
+  cat(paste0("M = ", ifelse("rpsi_time" %in% class(x), "Many values", scales::comma(x$M)), "\n"))
   cat(paste0("B = ", scales::comma(x$B), "\n"))
-  cat(paste0("PSI = ", ifelse(is.data.frame(x$psi), "Many values", prettyNum(x$psi)), "\n"))
-  cat(paste0("p-value = ", ifelse(is.data.frame(x$psi), "Many values", prettyNum(x$p.val)), "\n"))
-  if (!is.data.frame(x$M)) {
+  cat(paste0("PSI = ", ifelse("rpsi_time" %in% class(x), "Many values", prettyNum(x$psi)), "\n"))
+  cat(paste0("p-value = ", ifelse("rpsi_time" %in% class(x), "Many values", prettyNum(x$p.val)), "\n"))
+  if (!"rpsi_time" %in% class(x)) {
     sapply(crit_val, function(i, x) {cat(paste0(scales::percent(i), " threshold = ", prettyNum(stats::qchisq(i,  x$B - 1)*(1/x$N + 1/x$M)), "\n"))}, x = x)
   }
   cat("\n")
@@ -189,7 +196,7 @@ print.rpsi = function(x, crit_val = 0.99, ...) {
 #' @param crit_val The significance level to use.
 #' @param fill.col The colour palette to use. Must be a palette from \link[rpsi]{rpsi_cols}().
 #' @param ... Redundant argument for consistency with method.
-#' @return A list of object of classes \code{gg} and \code{ggplot}.
+#' @return A list of object(s) of classes \code{gg} and \code{ggplot}.
 #' @export
 plot.rpsi = function(x, crit_val = 0.99, fill.col = "blues", ...) {
   
@@ -199,15 +206,17 @@ plot.rpsi = function(x, crit_val = 0.99, fill.col = "blues", ...) {
   
   stopifnot("Input 'fill.col' must be one of 'blues', 'reds', 'greens'." = (fill.col %in% rpsi_cols()))
   
-  if (!is.null(x$date)) {
+  g = list()
+  
+  if ("rpsi_time" %in% class(x)) {
+    
     CV = x$p.val %>% dplyr::mutate(CRIT = stats::qchisq(crit_val, x$B - 1)*(1/x$N + 1/x$M$N_Y))
     
-    g = list()
     date = x$date
     var = x$var
     
     g[[1]] = ggplot2::ggplot(data = CV %>% dplyr::mutate(FILL = factor(ifelse(p.val<1-crit_val, "0", "1")))) +
-      ggplot2::geom_line(ggplot2::aes(x = !!rlang::sym(x$date), y = PSI), size = 0.8, color = "blue") +
+      ggplot2::geom_line(ggplot2::aes(x = !!rlang::sym(x$date), y = PSI), size = 0.8, color = "blue", alpha = 0.5) +
       ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$date), y = PSI, color = FILL), show.legend = FALSE) +
       sapply(unique(CV[[date]]), function(i, x) {ggplot2::geom_line(data = data.frame(DATE = c(CV[[date]][match(i, CV[[date]])-1], i, CV[[date]][match(i, CV[[date]])+1]), y = CV$CRIT[match(i, CV[[date]])]), ggplot2::aes(x = DATE, y = y), linetype = "solid")}, x = x) +
       ggplot2::geom_text(data = data.frame(x = max(CV[[date]]), 
@@ -218,10 +227,10 @@ plot.rpsi = function(x, crit_val = 0.99, fill.col = "blues", ...) {
       ggplot2::theme_bw() +
       ggplot2::labs(title = "Population stability index",
                     subtitle = "Over time") +
-      ggplot2::scale_color_manual(name = var, values = c("red", "blue"))
+      ggplot2::scale_color_manual(name = var, values = c("0" = "red", "1" = "blue"))
     
     g[[2]] = ggplot2::ggplot(data = CV %>% dplyr::mutate(FILL = factor(ifelse(p.val<1-crit_val, "0", "1")))) +
-      ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$date), y = p.val, color = FILL), show.legend = FALSE) +
+      ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$date), y = p.val, color = FILL), show.legend = FALSE, alpha = 0.5) +
       ggplot2::geom_hline(ggplot2::aes(yintercept = 1 - crit_val), linetype = "dashed") +
       ggplot2::geom_hline(ggplot2::aes(yintercept = 0), linetype = "solid") +
       ggplot2::geom_text(data = data.frame(x = max(CV[[date]]), 
@@ -233,7 +242,7 @@ plot.rpsi = function(x, crit_val = 0.99, fill.col = "blues", ...) {
       ggplot2::labs(y = "p-value",
                     title = "p-values",
                     subtitle = "Over time") +
-      ggplot2::scale_color_manual(name = var, values = c("red", "blue"))
+      ggplot2::scale_color_manual(name = var, values = c("0" = "red", "1" = "blue"))
     
     g[[3]] = 
       ggplot2::ggplot(data = rbind(x$data %>% dplyr::mutate(POP = "Comparison"), 
@@ -254,6 +263,26 @@ plot.rpsi = function(x, crit_val = 0.99, fill.col = "blues", ...) {
                      panel.background = ggplot2::element_blank()) +
       ggplot2::scale_fill_manual(values = rpsi_pal(fill.col)(nlevels(x$data[[var]])))
     
+    
+    ts = rpsi::get_ci(x, conf.level = crit_val, ...)
+    
+    g[[4]] = ggplot2::ggplot(data = ts$ts) +
+      ggplot2::geom_line(ggplot2::aes(x = DATE, y = LWR), color = "darkgrey") +
+      ggplot2::geom_line(ggplot2::aes(x = DATE, y = UPR), color = "darkgrey") +
+      ggplot2::geom_point(ggplot2::aes(x = DATE, y = LWR, color = CHK1), size = 1, alpha = 0.5) +
+      ggplot2::geom_point(ggplot2::aes(x = DATE, y = UPR, color = CHK2), size = 1, alpha = 0.5) +
+      ggplot2::geom_hline(ggplot2::aes(yintercept = PROP_X, linetype = LINE)) +
+      ggplot2::facet_wrap(as.formula(paste("~", x$var)), scales = "fixed") +
+      ggplot2::theme_bw() +
+      ggplot2::scale_color_manual(values = c("Breach" = "red", "Within interval" = "blue")) +
+      ggplot2::scale_linetype_manual(name = "LINE", values = "dashed") +
+      ggplot2::labs(x = NULL,
+                    y = NULL,
+                    title = paste0("Confidence intervals (", prettyNum(crit_val*100), "%)"),
+                    subtitle = method_names(ts$method)) +
+      ggplot2::theme(legend.title = ggplot2::element_blank()) +
+      ggplot2::scale_y_continuous(labels = scales::percent)
+    
     return(g)
     
   } else {
@@ -261,7 +290,7 @@ plot.rpsi = function(x, crit_val = 0.99, fill.col = "blues", ...) {
     CV = stats::qchisq(crit_val, x$B - 1)
     val = x$psi/(1/x$N + 1/x$M)
     
-    g = ggplot2::ggplot(data.frame(x = c(0, stats::qchisq(0.999999, x$B - 1))), ggplot2::aes(x)) +
+    g[[1]] = ggplot2::ggplot(data.frame(x = c(0, stats::qchisq(0.999999, x$B - 1))), ggplot2::aes(x)) +
       ggplot2::stat_function(fun = function(...) {stats::dchisq(..., df = x$B - 1)}, n = 3000) + 
       ggplot2::stat_function(fun = function(...) {stats::dchisq(..., df = x$B - 1)}, n = 3000, 
                     xlim = c(CV, max(CV, stats::qchisq(0.999999, x$B - 1))),
@@ -282,6 +311,22 @@ plot.rpsi = function(x, crit_val = 0.99, fill.col = "blues", ...) {
                     title = "Distribution comparison",
                     subtitle = paste0("p-value = ", prettyNum(x$p.val))) +
       ggplot2::geom_line(data = data.frame(x = val, y = seq(0, stats::dchisq(val, df = x$B - 1), length.out = 100)), ggplot2::aes(x = x, y = y), linetype = "dashed")
+    
+    ts = rpsi::get_ci(x, conf.level = crit_val, ...)
+    
+    g[[2]] = ggplot2::ggplot(data = ts$ts) +
+      ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$var), y = PROP_X, shape = LINE), size = 2) +
+      ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$var), y = LWR, color = CHK1), size = 2, shape = 4) +
+      ggplot2::geom_point(ggplot2::aes(x = !!rlang::sym(x$var), y = UPR, color = CHK2), size = 2, shape = 4) +
+      ggplot2::theme_bw() +
+      ggplot2::scale_color_manual(values = c("Breach" = "red", "Within interval" = "blue")) +
+      ggplot2::scale_linetype_manual(name = "LINE", values = "dashed") +
+      ggplot2::labs(x = NULL,
+                    y = NULL,
+                    title = paste0("Confidence intervals (", prettyNum(crit_val*100), "%)"),
+                    subtitle = method_names(ts$method)) +
+      ggplot2::theme(legend.title = ggplot2::element_blank()) +
+      ggplot2::scale_y_continuous(labels = scales::percent)
     
     return(g)
     

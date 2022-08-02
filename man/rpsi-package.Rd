@@ -6,7 +6,7 @@
 \alias{rpsi-package}
 \title{rpsi: Inference using the Population Stability Index}
 \description{
-Calculation of the population stability index (commonly used in credit risk) and the evaluation of meaningful thresholds for inferring stability. Based on "Statistical properties of the population stability index" (Yurdakul & Naranjo, 2020) <doi:10.21314/JRMV.2020.227>.
+Calculation of the population stability index (commonly used in credit risk) and the evaluation of meaningful thresholds for inferring stability. Based on "Statistical properties of the population stability index", Yurdakul & Naranjo (2020) <doi:10.21314/JRMV.2020.227>.
 }
 \details{
 The only function you're likely to need from rpsi is \link[rpsi]{psi}, which returns an object of class \code{rpsi}.

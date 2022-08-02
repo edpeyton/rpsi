@@ -36,6 +36,8 @@ In this package we try to address this blind application of the PSI in
 industry by applying the statistical properties (Yurdakul & Naranjo, 2020) that
 provide better meaning than those currently perpetuated in the industry.
 
+*****
+
 ## Moving away from arbitrary thresholds
 
 Better critical values have already been derived (Yurdakul & Naranjo, 2020). The
@@ -62,6 +64,8 @@ $$CV_{\alpha} = \chi^{2}_{\alpha,B-1}\cdot(1/M+1/N)$$
 which is dependent on $M$, meaning that that the critical threshold will change with the sample size of the comparison distribution. This is the threshold value
 used instead of the arbitrary 0.02, 0.05, 0.1, etc. noted earlier.
 
+*****
+
 ## Using `rpsi`
 
 Using the package is quite simple. The main function is `rpsi::psi(...)`
@@ -77,11 +81,11 @@ library(dplyr)
 set.seed(1234)
 
 # Generate some data
-x = data.frame(x = rnorm(500, 0.1)) %>% mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) %>% group_by(VAL) %>% summarise(N = n())
-y = data.frame(x = rnorm(500, 0.1)) %>% mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) %>% group_by(VAL) %>% summarise(N = n())
+x = data.frame(table(factor(sample(LETTERS[1:length(p)], 500, replace = TRUE, prob = p))))
+y = data.frame(table(factor(sample(LETTERS[1:length(p)], 500, replace = TRUE, prob = p))))
 
 # Calculate the PSI
-res = psi(x, y, var = "VAL", count = "N")
+res = psi(x, y, var = "Var1", count = "Freq")
 
 print(res)
 #> 
@@ -96,7 +100,7 @@ print(res)
 #> 99% threshold = 4.54e-02
 ```
 
-Here the PSI value comes out as 0.0106 and the 99% threshold is 0.0454.
+Here the PSI value comes out as 0.006 and the 99% threshold is 0.0454.
 
 We can also plot a visual representation of the result using the `plot`
 method for `rpsi` objects.
@@ -107,6 +111,10 @@ plot(res, crit_val = 0.95)
 ```
 
 <img src="man/figures/unnamed-chunk-3-1.png" width="75%" />
+
+<img src="man/figures/unnamed-chunk-3-2.png" width="75%" />
+
+*****
 
 ### Comparison over time
 Furthermore, we can perform the comparison between a base distribution
@@ -169,8 +177,9 @@ plot(res, crit_val = 0.95)
 
 <img src="man/figures/unnamed-chunk-7-2.png" width="75%" />
 
-<img src="man/figures/unnamed-chunk-7-3.png" width="75%" />
+<img src="man/figures/unnamed-chunk-7-3.png" width="82%" />
 
+<img src="man/figures/unnamed-chunk-7-4.png" width="90%" />
 
 Here we see that the PSI exceeds the threshold at multiple points, despite the comparison sample being generated from the same random variable as the base. The main driver
 of this behaviour is the difference in sample sizes between the base and comparison distributions.

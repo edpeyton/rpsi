@@ -18,7 +18,9 @@ psi(x, y, var, count, date = NULL, random_base = TRUE)
 \item{date}{(Optional) The name of a column in \code{y} representing a date variable. The column \code{date} in \code{y} should be of class "Date". This is useful if making multiple
 comparisons between \code{y} and \code{x} over time.}
 
-\item{random_base}{A logical value indicating whether the base distribution used for comparison is considered random or if it is considered a population.}
+\item{random_base}{A logical value indicating whether the base distribution used for comparison is considered random or if it is considered a population.
+
+When \code{TRUE}, the values of \code{count} in the base distribution \code{x}}
 }
 \value{
 An object of class \code{rpsi}. See \link[rpsi]{rpsi} for details of the object class.
@@ -39,15 +41,13 @@ where \mjeqn{B}{ascii} is the number of discrete values of the distribution and 
 \donttest{
 library(rpsi)
 library(dplyr)
-x = data.frame(x = rnorm(500, 0.1)) \%>\% 
-mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) \%>\% 
-group_by(VAL) \%>\% 
-summarise(N = n())
-y = data.frame(x = rnorm(500, 0.1)) \%>\% 
-mutate(VAL  = factor(ifelse(x< -2,"A", ifelse(x<0, "B", ifelse(x>2, "D", "C"))))) \%>\% 
-group_by(VAL) \%>\% 
-summarise(N = n())
-res = psi(x, y, var = "VAL", count = "N")
+
+p = c(0.05, 0.45, 0.45, 0.05)
+
+x = data.frame(table(factor(sample(LETTERS[1:length(p)], 500, replace = TRUE, prob = p))))
+y = data.frame(table(factor(sample(LETTERS[1:length(p)], 500, replace = TRUE, prob = p))))
+
+res = psi(x, y, var = "Var1", count = "Freq")
 plot(res, crit_val = 0.95)
 
 #Example over time
@@ -65,6 +65,13 @@ summarise(VALUE = n(), .groups = "keep") \%>\%
 ungroup()
 res = psi(x, y, var = "TYPE", count = "VALUE", date = "DATE")
 plot(res, crit_val = 0.95)
+
+
+# Example with random_base = FALSE
+x = data.frame(TYPE = factor(LETTERS[1:length(p)]), VALUE = p)
+res = psi(x, y, var = "TYPE", count = "VALUE", date = "DATE", random_base = FALSE)
+plot(res, crit_val = 0.95)
+
 }
 
 }

@@ -20,5 +20,6 @@ Imports:
   mathjaxr,
   magrittr,
   grDevices,
-  latex2exp
+  latex2exp,
+  DescTools
 RdMacros: mathjaxr
